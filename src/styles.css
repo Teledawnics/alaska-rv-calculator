@@ -134,28 +134,43 @@ select {
   background: #f8fafc;
   border: 1px solid #e2e8f0;
   border-radius: 20px;
-  padding: 24px;
-  overflow-x: auto;
+  overflow: hidden;
 }
 
-table {
+.table-toggle {
   width: 100%;
-  border-collapse: collapse;
-}
-
-th {
-  background: #e2e8f0;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 24px;
   text-align: left;
-  padding: 12px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
 }
 
-td {
-  padding: 12px;
-  border-top: 1px solid #e2e8f0;
-}
-
-tr:hover {
+.table-toggle:hover {
   background: #f1f5f9;
+}
+
+.table-toggle h3 {
+  margin: 0;
+  font-size: 24px;
+  font-weight: bold;
+}
+
+.toggle-icon {
+  font-size: 24px;
+  font-weight: bold;
+  color: #64748b;
+}
+
+.table-content {
+  padding: 24px;
+  border-top: 1px solid #e2e8f0;
+  background: #f8fafc;
+  overflow-x: auto;
 }
 
 @media (max-width: 900px) {

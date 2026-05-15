@@ -56,6 +56,7 @@ export default function AlaskaRVCalculator() {
   const [aaaDiscount, setAaaDiscount] = React.useState(false);
   const [milesDriven, setMilesDriven] = React.useState(700);
   const [housekeepingGuests, setHousekeepingGuests] = React.useState(0);
+  const [showReferenceTable, setShowReferenceTable] = React.useState(false);
 
   const getRateTier = () => {
     if (nights >= 21) return 'long';
@@ -364,27 +365,40 @@ export default function AlaskaRVCalculator() {
       </div>
 
       <div className="table-wrapper">
-        <h3>Quick Reference Table</h3>
-        <table>
-          <thead>
-            <tr>
-              <th>Nights</th>
-              <th>Unlimited Mileage</th>
-              <th>CDW</th>
-              <th>WDP</th>
-            </tr>
-          </thead>
-          <tbody>
-            {Object.keys(mileageTable).map((night) => (
-              <tr key={night}>
-                <td>{night}</td>
-                <td>${mileageTable[night]}</td>
-                <td>${cdwTable[night]}</td>
-                <td>${wdpTable[night]}</td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
+        <button
+          onClick={() => setShowReferenceTable(!showReferenceTable)}
+          className="table-toggle"
+        >
+          <h3>Quick Reference Table</h3>
+          <span className="toggle-icon">
+            {showReferenceTable ? '−' : '+'}
+          </span>
+        </button>
+
+        {showReferenceTable && (
+          <div className="table-content">
+            <table>
+              <thead>
+                <tr>
+                  <th>Nights</th>
+                  <th>Unlimited Mileage</th>
+                  <th>CDW</th>
+                  <th>WDP</th>
+                </tr>
+              </thead>
+              <tbody>
+                {Object.keys(mileageTable).map((night) => (
+                  <tr key={night}>
+                    <td>{night}</td>
+                    <td>${mileageTable[night]}</td>
+                    <td>${cdwTable[night]}</td>
+                    <td>${wdpTable[night]}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        )}
       </div>
     </div>
   );
