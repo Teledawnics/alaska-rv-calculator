@@ -132,312 +132,257 @@ export default function AlaskaRVCalculator() {
     housekeepingCost;
 
   return (
-    <div className="min-h-screen bg-slate-100 p-6">
-      <div className="max-w-6xl mx-auto bg-white rounded-3xl shadow-2xl p-8">
-        <h1 className="text-4xl font-bold mb-2">
-          Alaska Motorhome Rental Calculator
-        </h1>
+    <div className="container">
+      <h1>Alaska Motorhome Rental Calculator</h1>
 
-        <p className="text-gray-600 mb-8">
-          Updated tax logic with untaxed housekeeping and unlimited mileage-only taxation.
-        </p>
+      <p className="subtitle">
+        Updated tax logic with untaxed housekeeping and unlimited mileage-only taxation.
+      </p>
 
-        <div className="grid lg:grid-cols-2 gap-8">
-          <div className="space-y-6">
-            <div>
-              <label className="block font-semibold mb-2">Season</label>
-              <select
-                className="w-full border rounded-xl p-3"
-                value={season}
-                onChange={(e) => setSeason(e.target.value)}
-              >
-                {Object.entries(rates).map(([key, value]) => (
-                  <option key={key} value={key}>
-                    {value.label}
-                  </option>
-                ))}
-              </select>
-            </div>
-
-            <div>
-              <label className="block font-semibold mb-2">Vehicle Size</label>
-              <select
-                className="w-full border rounded-xl p-3"
-                value={vehicle}
-                onChange={(e) => setVehicle(e.target.value)}
-              >
-                <option value="standard">Standard Class C</option>
-                <option value="large">Large Class C</option>
-              </select>
-            </div>
-
-            <div className="space-y-4">
-              <label className="flex items-center gap-3 font-semibold">
-                <input
-                  type="checkbox"
-                  checked={splitSeasonMode}
-                  onChange={(e) => setSplitSeasonMode(e.target.checked)}
-                />
-                Enable Split Season Pricing
-              </label>
-
-              {!splitSeasonMode ? (
-                <div>
-                  <label className="block font-semibold mb-2"># of Nights</label>
-                  <input
-                    type="number"
-                    min="4"
-                    max="25"
-                    className="w-full border rounded-xl p-3"
-                    value={nights}
-                    onChange={(e) => setNights(Number(e.target.value))}
-                  />
-                </div>
-              ) : (
-                <div className="space-y-4 bg-slate-50 border rounded-2xl p-4">
-                  <div>
-                    <label className="block font-semibold mb-2">
-                      Season 1 Nights
-                    </label>
-                    <input
-                      type="number"
-                      min="1"
-                      className="w-full border rounded-xl p-3"
-                      value={seasonOneNights}
-                      onChange={(e) => setSeasonOneNights(Number(e.target.value))}
-                    />
-                  </div>
-
-                  <div>
-                    <label className="block font-semibold mb-2">
-                      Season 2
-                    </label>
-                    <select
-                      className="w-full border rounded-xl p-3"
-                      value={seasonTwo}
-                      onChange={(e) => setSeasonTwo(e.target.value)}
-                    >
-                      {Object.entries(rates).map(([key, value]) => (
-                        <option key={key} value={key}>
-                          {value.label}
-                        </option>
-                      ))}
-                    </select>
-                  </div>
-
-                  <div>
-                    <label className="block font-semibold mb-2">
-                      Season 2 Nights
-                    </label>
-                    <input
-                      type="number"
-                      min="1"
-                      className="w-full border rounded-xl p-3"
-                      value={seasonTwoNights}
-                      onChange={(e) => setSeasonTwoNights(Number(e.target.value))}
-                    />
-                  </div>
-                </div>
-              )}
-            </div>
-
-            <div>
-              <label className="block font-semibold mb-2">
-                Housekeeping Package (# of Guests)
-              </label>
-              <input
-                type="number"
-                min="0"
-                className="w-full border rounded-xl p-3"
-                value={housekeepingGuests}
-                onChange={(e) =>
-                  setHousekeepingGuests(Number(e.target.value))
-                }
-              />
-            </div>
-
-            <div>
-              <label className="block font-semibold mb-2">
-                Estimated Miles
-              </label>
-              <input
-                type="number"
-                className="w-full border rounded-xl p-3"
-                value={unlimitedMileage ? '' : milesDriven}
-                onChange={(e) => setMilesDriven(Number(e.target.value))}
-                disabled={unlimitedMileage}
-                placeholder={
-                  unlimitedMileage
-                    ? 'Unlimited mileage selected'
-                    : 'Enter estimated miles'
-                }
-              />
-            </div>
-
-            <div className="space-y-3 bg-slate-50 p-4 rounded-2xl border">
-              <label className="flex items-center gap-3">
-                <input
-                  type="checkbox"
-                  checked={unlimitedMileage}
-                  onChange={(e) => setUnlimitedMileage(e.target.checked)}
-                />
-                Unlimited Mileage ($39/day)
-              </label>
-
-              <label className="flex items-center gap-3">
-                <input
-                  type="checkbox"
-                  checked={includeCDW}
-                  onChange={(e) => setIncludeCDW(e.target.checked)}
-                />
-                Add CDW ($19/day)
-              </label>
-
-              <label className="flex items-center gap-3">
-                <input
-                  type="checkbox"
-                  checked={includeWDP}
-                  onChange={(e) => setIncludeWDP(e.target.checked)}
-                />
-                Add WDP ($12/day)
-              </label>
-
-              <label className="flex items-center gap-3">
-                <input
-                  type="checkbox"
-                  checked={aaaDiscount}
-                  onChange={(e) => setAaaDiscount(e.target.checked)}
-                />
-                AAA Discount (5% off rental total)
-              </label>
-            </div>
-          </div>
-
-          <div className="bg-slate-50 rounded-2xl p-6 border h-fit">
-            <h2 className="text-2xl font-bold mb-6">
-              Rental Breakdown
-            </h2>
-
-            <div className="space-y-4 text-lg">
-              <div className="flex justify-between">
-                <span>Rate Structure</span>
-                <span className="font-semibold capitalize">
-                  {splitSeasonMode
-                    ? `${seasonOneNights} nights ${season} + ${seasonTwoNights} nights ${seasonTwo}`
-                    : rateTier}
-                </span>
-              </div>
-
-              <div className="flex justify-between">
-                <span>Nightly Rate</span>
-                <span className="font-semibold">
-                  {splitSeasonMode
-                    ? 'Blended Seasonal Pricing'
-                    : `$${nightlyRate.toFixed(2)}`}
-                </span>
-              </div>
-
-              <div className="flex justify-between">
-                <span>Rental Total</span>
-                <span className="font-semibold">
-                  ${rentalTotal.toFixed(2)}
-                </span>
-              </div>
-
-              <div className="flex justify-between text-green-700">
-                <span>AAA Discount</span>
-                <span>-${aaaDiscountAmount.toFixed(2)}</span>
-              </div>
-
-              <div className="flex justify-between">
-                <span>Mileage</span>
-                <span>${mileageCost.toFixed(2)}</span>
-              </div>
-
-              <div className="flex justify-between">
-                <span>CDW</span>
-                <span>${cdwCost.toFixed(2)}</span>
-              </div>
-
-              <div className="flex justify-between">
-                <span>WDP</span>
-                <span>${wdpCost.toFixed(2)}</span>
-              </div>
-
-              <div className="flex justify-between">
-                <span>Housekeeping Package</span>
-                <span>${housekeepingCost.toFixed(2)}</span>
-              </div>
-
-              <div className="flex justify-between">
-                <span>CFP (10%)</span>
-                <span>${cfpCost.toFixed(2)}</span>
-              </div>
-
-              <div className="flex justify-between">
-                <span>Anchorage Tax (8%)</span>
-                <span>${anchorageTax.toFixed(2)}</span>
-              </div>
-
-              <div className="flex justify-between">
-                <span>Alaska Tax (3%)</span>
-                <span>${alaskaTax.toFixed(2)}</span>
-              </div>
-
-              <div className="border-t pt-4 flex justify-between text-3xl font-bold">
-                <span>Grand Total</span>
-                <span>${grandTotal.toFixed(2)}</span>
-              </div>
-            </div>
-
-            <div className="mt-8 text-sm text-gray-600 space-y-2">
-              <p>
-                • Mileage without unlimited plan is charged at $0.39/mile.
-              </p>
-              <p>
-                • Anchorage rental tax applies only to the discounted rental
-                total and unlimited mileage package, capped at $240.
-              </p>
-              <p>
-                • Alaska state tax applies only to the discounted rental total
-                and unlimited mileage package.
-              </p>
-              <p>
-                • CFP is currently excluded from the grand total calculation.
-              </p>
-              <p>
-                • Housekeeping package is $35 per guest and is not taxed.
-              </p>
-            </div>
-          </div>
-        </div>
-
-        <div className="mt-10 bg-slate-50 rounded-2xl p-6 border overflow-x-auto">
-          <h3 className="text-xl font-bold mb-4">
-            Quick Reference Table
-          </h3>
-
-          <table className="w-full text-left border-collapse">
-            <thead>
-              <tr className="border-b bg-slate-200">
-                <th className="p-2">Nights</th>
-                <th className="p-2">Unlimited Mileage</th>
-                <th className="p-2">CDW</th>
-                <th className="p-2">WDP</th>
-              </tr>
-            </thead>
-            <tbody>
-              {Object.keys(mileageTable).map((night) => (
-                <tr key={night} className="border-b hover:bg-slate-100">
-                  <td className="p-2">{night}</td>
-                  <td className="p-2">${mileageTable[night]}</td>
-                  <td className="p-2">${cdwTable[night]}</td>
-                  <td className="p-2">${wdpTable[night]}</td>
-                </tr>
+      <div className="grid">
+        {/* LEFT SIDE */}
+        <div>
+          <div className="section">
+            <label>Season</label>
+            <select
+              value={season}
+              onChange={(e) => setSeason(e.target.value)}
+            >
+              {Object.entries(rates).map(([key, value]) => (
+                <option key={key} value={key}>
+                  {value.label}
+                </option>
               ))}
-            </tbody>
-          </table>
+            </select>
+          </div>
+
+          <div className="section">
+            <label>Vehicle Size</label>
+            <select
+              value={vehicle}
+              onChange={(e) => setVehicle(e.target.value)}
+            >
+              <option value="standard">Standard Class C</option>
+              <option value="large">Large Class C</option>
+            </select>
+          </div>
+
+          <div className="section">
+            <label>Enable Split Season Pricing</label>
+            <div className="checkbox-row">
+              <input
+                type="checkbox"
+                checked={splitSeasonMode}
+                onChange={(e) => setSplitSeasonMode(e.target.checked)}
+                id="splitSeason"
+              />
+              <label htmlFor="splitSeason" style={{ marginBottom: 0 }}>Split Seasons</label>
+            </div>
+          </div>
+
+          {!splitSeasonMode ? (
+            <div className="section">
+              <label># of Nights</label>
+              <input
+                type="number"
+                min="4"
+                max="25"
+                value={nights}
+                onChange={(e) => setNights(Number(e.target.value))}
+              />
+            </div>
+          ) : (
+            <>
+              <div className="section">
+                <label>Season 1 Nights</label>
+                <input
+                  type="number"
+                  min="1"
+                  value={seasonOneNights}
+                  onChange={(e) => setSeasonOneNights(Number(e.target.value))}
+                />
+              </div>
+              <div className="section">
+                <label>Season 2</label>
+                <select
+                  value={seasonTwo}
+                  onChange={(e) => setSeasonTwo(e.target.value)}
+                >
+                  {Object.entries(rates).map(([key, value]) => (
+                    <option key={key} value={key}>
+                      {value.label}
+                    </option>
+                  ))}
+                </select>
+              </div>
+              <div className="section">
+                <label>Season 2 Nights</label>
+                <input
+                  type="number"
+                  min="1"
+                  value={seasonTwoNights}
+                  onChange={(e) => setSeasonTwoNights(Number(e.target.value))}
+                />
+              </div>
+            </>
+          )}
+
+          <div className="section">
+            <label>Housekeeping Package (# of Guests)</label>
+            <input
+              type="number"
+              min="0"
+              value={housekeepingGuests}
+              onChange={(e) => setHousekeepingGuests(Number(e.target.value))}
+            />
+          </div>
+
+          <div className="section">
+            <label>Estimated Miles</label>
+            <input
+              type="number"
+              value={unlimitedMileage ? '' : milesDriven}
+              onChange={(e) => setMilesDriven(Number(e.target.value))}
+              disabled={unlimitedMileage}
+              placeholder={
+                unlimitedMileage
+                  ? 'Unlimited mileage selected'
+                  : 'Enter estimated miles'
+              }
+            />
+          </div>
+
+          <div className="checkbox-group">
+            <div className="checkbox-row">
+              <input
+                type="checkbox"
+                checked={unlimitedMileage}
+                onChange={(e) => setUnlimitedMileage(e.target.checked)}
+                id="unlimited"
+              />
+              <label htmlFor="unlimited" style={{ marginBottom: 0 }}>Unlimited Mileage ($39/day)</label>
+            </div>
+
+            <div className="checkbox-row">
+              <input
+                type="checkbox"
+                checked={includeCDW}
+                onChange={(e) => setIncludeCDW(e.target.checked)}
+                id="cdw"
+              />
+              <label htmlFor="cdw" style={{ marginBottom: 0 }}>Add CDW ($19/day)</label>
+            </div>
+
+            <div className="checkbox-row">
+              <input
+                type="checkbox"
+                checked={includeWDP}
+                onChange={(e) => setIncludeWDP(e.target.checked)}
+                id="wdp"
+              />
+              <label htmlFor="wdp" style={{ marginBottom: 0 }}>Add WDP ($12/day)</label>
+            </div>
+
+            <div className="checkbox-row">
+              <input
+                type="checkbox"
+                checked={aaaDiscount}
+                onChange={(e) => setAaaDiscount(e.target.checked)}
+                id="aaa"
+              />
+              <label htmlFor="aaa" style={{ marginBottom: 0 }}>AAA Discount (5% off rental total)</label>
+            </div>
+          </div>
         </div>
+
+        {/* RIGHT SIDE */}
+        <div className="card">
+          <h2>Rental Breakdown</h2>
+
+          <div className="breakdown-row">
+            <span>Rate Structure</span>
+            <span>
+              {splitSeasonMode
+                ? `${seasonOneNights}n ${season} + ${seasonTwoNights}n ${seasonTwo}`
+                : rateTier}
+            </span>
+          </div>
+
+          <div className="breakdown-row">
+            <span>Rental Total</span>
+            <strong>${rentalTotal.toFixed(2)}</strong>
+          </div>
+
+          <div className="breakdown-row green">
+            <span>AAA Discount</span>
+            <strong>-${aaaDiscountAmount.toFixed(2)}</strong>
+          </div>
+
+          <div className="breakdown-row">
+            <span>Mileage</span>
+            <span>${mileageCost.toFixed(2)}</span>
+          </div>
+
+          <div className="breakdown-row">
+            <span>CDW</span>
+            <span>${cdwCost.toFixed(2)}</span>
+          </div>
+
+          <div className="breakdown-row">
+            <span>WDP</span>
+            <span>${wdpCost.toFixed(2)}</span>
+          </div>
+
+          <div className="breakdown-row">
+            <span>Housekeeping</span>
+            <span>${housekeepingCost.toFixed(2)}</span>
+          </div>
+
+          <div className="breakdown-row">
+            <span>Anchorage Tax (8%)</span>
+            <strong>${anchorageTax.toFixed(2)}</strong>
+          </div>
+
+          <div className="breakdown-row">
+            <span>Alaska Tax (3%)</span>
+            <span>${alaskaTax.toFixed(2)}</span>
+          </div>
+
+          <div className="total-row">
+            <span>Grand Total</span>
+            <span>${grandTotal.toFixed(2)}</span>
+          </div>
+
+          <div className="notes">
+            <p>• Mileage without unlimited plan is charged at $0.39/mile.</p>
+            <p>• Anchorage rental tax capped at $240.</p>
+            <p>• Housekeeping package ($35/guest) is not taxed.</p>
+          </div>
+        </div>
+      </div>
+
+      <div className="table-wrapper">
+        <h3>Quick Reference Table</h3>
+        <table>
+          <thead>
+            <tr>
+              <th>Nights</th>
+              <th>Unlimited Mileage</th>
+              <th>CDW</th>
+              <th>WDP</th>
+            </tr>
+          </thead>
+          <tbody>
+            {Object.keys(mileageTable).map((night) => (
+              <tr key={night}>
+                <td>{night}</td>
+                <td>${mileageTable[night]}</td>
+                <td>${cdwTable[night]}</td>
+                <td>${wdpTable[night]}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
       </div>
     </div>
   );
