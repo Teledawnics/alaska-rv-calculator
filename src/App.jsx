@@ -1,72 +1,444 @@
-import React from 'react'
+import React from 'react';
 
-export default function App() {
+export default function AlaskaRVCalculator() {
   const rates = {
     spring: {
       label: 'May 1 – June 14',
       standard: { short: 199, medium: 179, long: 169 },
-      large: { short: 219, medium: 199, long: 189 }
+      large: { short: 219, medium: 199, long: 189 },
     },
     peak: {
       label: 'June 15 – August 15',
       standard: { short: 349, medium: 319, long: 309 },
-      large: { short: 369, medium: 339, long: 329 }
+      large: { short: 369, medium: 339, long: 329 },
     },
     fall: {
       label: 'August 16 – September 30',
       standard: { short: 199, medium: 179, long: 169 },
-      large: { short: 219, medium: 199, long: 189 }
-    }
-  }
+      large: { short: 219, medium: 199, long: 189 },
+    },
+  };
 
-  const [season, setSeason] = React.useState('spring')
-  const [vehicle, setVehicle] = React.useState('standard')
-  const [nights, setNights] = React.useState(7)
-  const [miles, setMiles] = React.useState(700)
+  const mileageTable = {
+    4: 156, 5: 195, 6: 234, 7: 273, 8: 312,
+    9: 351, 10: 390, 11: 429, 12: 468, 13: 507,
+    14: 546, 15: 585, 16: 624, 17: 663, 18: 702,
+    19: 741, 20: 780, 21: 819, 22: 858, 23: 897,
+    24: 936, 25: 975,
+  };
 
-  const tier = nights >= 21 ? 'long' : nights >= 7 ? 'medium' : 'short'
+  const cdwTable = {
+    4: 76, 5: 95, 6: 114, 7: 133, 8: 152,
+    9: 171, 10: 190, 11: 209, 12: 228, 13: 247,
+    14: 266, 15: 285, 16: 304, 17: 323, 18: 342,
+    19: 361, 20: 380, 21: 399, 22: 418, 23: 437,
+    24: 456, 25: 475,
+  };
 
-  const nightly = rates[season][vehicle][tier]
-  const rental = nightly * nights
+  const wdpTable = {
+    4: 48, 5: 60, 6: 72, 7: 84, 8: 96,
+    9: 108, 10: 120, 11: 132, 12: 144, 13: 156,
+    14: 168, 15: 180, 16: 192, 17: 204, 18: 216,
+    19: 228, 20: 240, 21: 252, 22: 264, 23: 276,
+    24: 288, 25: 300,
+  };
 
-  const mileage = miles * 0.39
-  const tax = (rental + mileage) * 0.11
+  const [season, setSeason] = React.useState('spring');
+  const [splitSeasonMode, setSplitSeasonMode] = React.useState(false);
+  const [seasonOneNights, setSeasonOneNights] = React.useState(7);
+  const [seasonTwo, setSeasonTwo] = React.useState('peak');
+  const [seasonTwoNights, setSeasonTwoNights] = React.useState(3);
+  const [vehicle, setVehicle] = React.useState('standard');
+  const [nights, setNights] = React.useState(7);
+  const [unlimitedMileage, setUnlimitedMileage] = React.useState(false);
+  const [includeCDW, setIncludeCDW] = React.useState(false);
+  const [includeWDP, setIncludeWDP] = React.useState(false);
+  const [aaaDiscount, setAaaDiscount] = React.useState(false);
+  const [milesDriven, setMilesDriven] = React.useState(700);
+  const [housekeepingGuests, setHousekeepingGuests] = React.useState(0);
 
-  const total = rental + mileage + tax
+  const getRateTier = () => {
+    if (nights >= 21) return 'long';
+    if (nights >= 7) return 'medium';
+    return 'short';
+  };
+
+  const rateTier = getRateTier();
+
+  // Split season pricing still uses the TOTAL trip length
+  // to determine the pricing tier
+  const combinedTripNights = splitSeasonMode
+    ? seasonOneNights + seasonTwoNights
+    : nights;
+
+  const sharedTier = (() => {
+    if (combinedTripNights >= 21) return 'long';
+    if (combinedTripNights >= 7) return 'medium';
+    return 'short';
+  })();
+
+  const nightlyRate = rates[season][vehicle][rateTier];
+
+  const rentalTotal = splitSeasonMode
+    ? (
+        rates[season][vehicle][sharedTier] * seasonOneNights +
+        rates[seasonTwo][vehicle][sharedTier] * seasonTwoNights
+      )
+    : nightlyRate * nights;
+
+  const totalNights = splitSeasonMode
+    ? seasonOneNights + seasonTwoNights
+    : nights;
+
+  const mileageCost = unlimitedMileage
+    ? totalNights * 39
+    : milesDriven * 0.39;
+
+  const cdwCost = includeCDW ? totalNights * 19 : 0;
+  const wdpCost = includeWDP ? totalNights * 12 : 0;
+
+  const aaaDiscountAmount = aaaDiscount
+    ? rentalTotal * 0.05
+    : 0;
+
+  const discountedRentalTotal = rentalTotal - aaaDiscountAmount;
+
+  // CFP removed from total calculation based on provided pricing formula
+  const cfpCost = 0;
+
+  const housekeepingCost = housekeepingGuests * 35;
+
+  // Only unlimited mileage package is taxable
+  const taxableMileage = unlimitedMileage ? mileageCost : 0;
+
+  // Anchorage tax capped at $240
+  const anchorageTax = Math.min(
+    (discountedRentalTotal + taxableMileage) * 0.08,
+    240
+  );
+
+  // Alaska state tax
+  const alaskaTax =
+    (discountedRentalTotal + taxableMileage) * 0.03;
+
+  const grandTotal =
+    discountedRentalTotal +
+    mileageCost +
+    cdwCost +
+    wdpCost +
+    cfpCost +
+    anchorageTax +
+    alaskaTax +
+    housekeepingCost;
 
   return (
-    <div style={{ padding: 20 }}>
-      <h1>Alaska RV Calculator</h1>
+    <div className="min-h-screen bg-slate-100 p-6">
+      <div className="max-w-6xl mx-auto bg-white rounded-3xl shadow-2xl p-8">
+        <h1 className="text-4xl font-bold mb-2">
+          Alaska Motorhome Rental Calculator
+        </h1>
 
-      <select value={season} onChange={e => setSeason(e.target.value)}>
-        {Object.entries(rates).map(([k,v]) => (
-          <option key={k} value={k}>{v.label}</option>
-        ))}
-      </select>
+        <p className="text-gray-600 mb-8">
+          Updated tax logic with untaxed housekeeping and unlimited mileage-only taxation.
+        </p>
 
-      <select value={vehicle} onChange={e => setVehicle(e.target.value)}>
-        <option value="standard">Standard</option>
-        <option value="large">Large</option>
-      </select>
+        <div className="grid lg:grid-cols-2 gap-8">
+          <div className="space-y-6">
+            <div>
+              <label className="block font-semibold mb-2">Season</label>
+              <select
+                className="w-full border rounded-xl p-3"
+                value={season}
+                onChange={(e) => setSeason(e.target.value)}
+              >
+                {Object.entries(rates).map(([key, value]) => (
+                  <option key={key} value={key}>
+                    {value.label}
+                  </option>
+                ))}
+              </select>
+            </div>
 
-      <input
-        type="number"
-        value={nights}
-        onChange={e => setNights(Number(e.target.value))}
-      />
+            <div>
+              <label className="block font-semibold mb-2">Vehicle Size</label>
+              <select
+                className="w-full border rounded-xl p-3"
+                value={vehicle}
+                onChange={(e) => setVehicle(e.target.value)}
+              >
+                <option value="standard">Standard Class C</option>
+                <option value="large">Large Class C</option>
+              </select>
+            </div>
 
-      <input
-        type="number"
-        value={miles}
-        onChange={e => setMiles(Number(e.target.value))}
-      />
+            <div className="space-y-4">
+              <label className="flex items-center gap-3 font-semibold">
+                <input
+                  type="checkbox"
+                  checked={splitSeasonMode}
+                  onChange={(e) => setSplitSeasonMode(e.target.checked)}
+                />
+                Enable Split Season Pricing
+              </label>
 
-      <hr />
+              {!splitSeasonMode ? (
+                <div>
+                  <label className="block font-semibold mb-2"># of Nights</label>
+                  <input
+                    type="number"
+                    min="4"
+                    max="25"
+                    className="w-full border rounded-xl p-3"
+                    value={nights}
+                    onChange={(e) => setNights(Number(e.target.value))}
+                  />
+                </div>
+              ) : (
+                <div className="space-y-4 bg-slate-50 border rounded-2xl p-4">
+                  <div>
+                    <label className="block font-semibold mb-2">
+                      Season 1 Nights
+                    </label>
+                    <input
+                      type="number"
+                      min="1"
+                      className="w-full border rounded-xl p-3"
+                      value={seasonOneNights}
+                      onChange={(e) => setSeasonOneNights(Number(e.target.value))}
+                    />
+                  </div>
 
-      <p>Rental: ${rental.toFixed(2)}</p>
-      <p>Mileage: ${mileage.toFixed(2)}</p>
-      <p>Tax: ${tax.toFixed(2)}</p>
-      <h2>Total: ${total.toFixed(2)}</h2>
+                  <div>
+                    <label className="block font-semibold mb-2">
+                      Season 2
+                    </label>
+                    <select
+                      className="w-full border rounded-xl p-3"
+                      value={seasonTwo}
+                      onChange={(e) => setSeasonTwo(e.target.value)}
+                    >
+                      {Object.entries(rates).map(([key, value]) => (
+                        <option key={key} value={key}>
+                          {value.label}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+
+                  <div>
+                    <label className="block font-semibold mb-2">
+                      Season 2 Nights
+                    </label>
+                    <input
+                      type="number"
+                      min="1"
+                      className="w-full border rounded-xl p-3"
+                      value={seasonTwoNights}
+                      onChange={(e) => setSeasonTwoNights(Number(e.target.value))}
+                    />
+                  </div>
+                </div>
+              )}
+            </div>
+
+            <div>
+              <label className="block font-semibold mb-2">
+                Housekeeping Package (# of Guests)
+              </label>
+              <input
+                type="number"
+                min="0"
+                className="w-full border rounded-xl p-3"
+                value={housekeepingGuests}
+                onChange={(e) =>
+                  setHousekeepingGuests(Number(e.target.value))
+                }
+              />
+            </div>
+
+            <div>
+              <label className="block font-semibold mb-2">
+                Estimated Miles
+              </label>
+              <input
+                type="number"
+                className="w-full border rounded-xl p-3"
+                value={unlimitedMileage ? '' : milesDriven}
+                onChange={(e) => setMilesDriven(Number(e.target.value))}
+                disabled={unlimitedMileage}
+                placeholder={
+                  unlimitedMileage
+                    ? 'Unlimited mileage selected'
+                    : 'Enter estimated miles'
+                }
+              />
+            </div>
+
+            <div className="space-y-3 bg-slate-50 p-4 rounded-2xl border">
+              <label className="flex items-center gap-3">
+                <input
+                  type="checkbox"
+                  checked={unlimitedMileage}
+                  onChange={(e) => setUnlimitedMileage(e.target.checked)}
+                />
+                Unlimited Mileage ($39/day)
+              </label>
+
+              <label className="flex items-center gap-3">
+                <input
+                  type="checkbox"
+                  checked={includeCDW}
+                  onChange={(e) => setIncludeCDW(e.target.checked)}
+                />
+                Add CDW ($19/day)
+              </label>
+
+              <label className="flex items-center gap-3">
+                <input
+                  type="checkbox"
+                  checked={includeWDP}
+                  onChange={(e) => setIncludeWDP(e.target.checked)}
+                />
+                Add WDP ($12/day)
+              </label>
+
+              <label className="flex items-center gap-3">
+                <input
+                  type="checkbox"
+                  checked={aaaDiscount}
+                  onChange={(e) => setAaaDiscount(e.target.checked)}
+                />
+                AAA Discount (5% off rental total)
+              </label>
+            </div>
+          </div>
+
+          <div className="bg-slate-50 rounded-2xl p-6 border h-fit">
+            <h2 className="text-2xl font-bold mb-6">
+              Rental Breakdown
+            </h2>
+
+            <div className="space-y-4 text-lg">
+              <div className="flex justify-between">
+                <span>Rate Structure</span>
+                <span className="font-semibold capitalize">
+                  {splitSeasonMode
+                    ? `${seasonOneNights} nights ${season} + ${seasonTwoNights} nights ${seasonTwo}`
+                    : rateTier}
+                </span>
+              </div>
+
+              <div className="flex justify-between">
+                <span>Nightly Rate</span>
+                <span className="font-semibold">
+                  {splitSeasonMode
+                    ? 'Blended Seasonal Pricing'
+                    : `$${nightlyRate.toFixed(2)}`}
+                </span>
+              </div>
+
+              <div className="flex justify-between">
+                <span>Rental Total</span>
+                <span className="font-semibold">
+                  ${rentalTotal.toFixed(2)}
+                </span>
+              </div>
+
+              <div className="flex justify-between text-green-700">
+                <span>AAA Discount</span>
+                <span>-${aaaDiscountAmount.toFixed(2)}</span>
+              </div>
+
+              <div className="flex justify-between">
+                <span>Mileage</span>
+                <span>${mileageCost.toFixed(2)}</span>
+              </div>
+
+              <div className="flex justify-between">
+                <span>CDW</span>
+                <span>${cdwCost.toFixed(2)}</span>
+              </div>
+
+              <div className="flex justify-between">
+                <span>WDP</span>
+                <span>${wdpCost.toFixed(2)}</span>
+              </div>
+
+              <div className="flex justify-between">
+                <span>Housekeeping Package</span>
+                <span>${housekeepingCost.toFixed(2)}</span>
+              </div>
+
+              <div className="flex justify-between">
+                <span>CFP (10%)</span>
+                <span>${cfpCost.toFixed(2)}</span>
+              </div>
+
+              <div className="flex justify-between">
+                <span>Anchorage Tax (8%)</span>
+                <span>${anchorageTax.toFixed(2)}</span>
+              </div>
+
+              <div className="flex justify-between">
+                <span>Alaska Tax (3%)</span>
+                <span>${alaskaTax.toFixed(2)}</span>
+              </div>
+
+              <div className="border-t pt-4 flex justify-between text-3xl font-bold">
+                <span>Grand Total</span>
+                <span>${grandTotal.toFixed(2)}</span>
+              </div>
+            </div>
+
+            <div className="mt-8 text-sm text-gray-600 space-y-2">
+              <p>
+                • Mileage without unlimited plan is charged at $0.39/mile.
+              </p>
+              <p>
+                • Anchorage rental tax applies only to the discounted rental
+                total and unlimited mileage package, capped at $240.
+              </p>
+              <p>
+                • Alaska state tax applies only to the discounted rental total
+                and unlimited mileage package.
+              </p>
+              <p>
+                • CFP is currently excluded from the grand total calculation.
+              </p>
+              <p>
+                • Housekeeping package is $35 per guest and is not taxed.
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <div className="mt-10 bg-slate-50 rounded-2xl p-6 border overflow-x-auto">
+          <h3 className="text-xl font-bold mb-4">
+            Quick Reference Table
+          </h3>
+
+          <table className="w-full text-left border-collapse">
+            <thead>
+              <tr className="border-b bg-slate-200">
+                <th className="p-2">Nights</th>
+                <th className="p-2">Unlimited Mileage</th>
+                <th className="p-2">CDW</th>
+                <th className="p-2">WDP</th>
+              </tr>
+            </thead>
+            <tbody>
+              {Object.keys(mileageTable).map((night) => (
+                <tr key={night} className="border-b hover:bg-slate-100">
+                  <td className="p-2">{night}</td>
+                  <td className="p-2">${mileageTable[night]}</td>
+                  <td className="p-2">${cdwTable[night]}</td>
+                  <td className="p-2">${wdpTable[night]}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </div>
     </div>
-  )
+  );
 }
