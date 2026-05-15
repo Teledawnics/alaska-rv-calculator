@@ -138,71 +138,161 @@ export default function AlaskaRVCalculator() {
     const seasonDisplay = splitSeasonMode
       ? `${seasonOneNights} nights ${season} + ${seasonTwoNights} nights ${seasonTwo}`
       : `${nights} nights ${season}`;
+    const pricingTier = splitSeasonMode ? sharedTier : rateTier;
 
     return `<!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <title>RV Rental Reservation Request</title>
+<meta charset="UTF-8">
+<title>RV Rental Reservation Email Preview</title>
+
+<style>
+  body {
+    font-family: Arial, sans-serif;
+    background: #f3f4f6;
+    margin: 0;
+    padding: 30px;
+  }
+
+  .container {
+    max-width: 800px;
+    margin: auto;
+    background: white;
+    border-radius: 16px;
+    border: 1px solid #e5e7eb;
+    padding: 24px;
+  }
+
+  .title {
+    font-size: 20px;
+    font-weight: bold;
+    margin-bottom: 10px;
+  }
+
+  .warning {
+    color: #dc2626;
+    font-weight: bold;
+    text-transform: uppercase;
+    font-size: 18px;
+    margin-top: 10px;
+  }
+
+  .section {
+    margin-top: 15px;
+    line-height: 1.6;
+  }
+
+  .box {
+    background: #f9fafb;
+    border: 1px solid #e5e7eb;
+    padding: 15px;
+    border-radius: 10px;
+    margin-top: 15px;
+  }
+
+  .box div {
+    margin: 8px 0;
+  }
+
+  .red-text {
+    color: #dc2626;
+    font-weight: bold;
+    margin-top: 20px;
+  }
+
+  .highlight {
+    background: #fef3c7;
+    border: 1px solid #facc15;
+    padding: 15px;
+    border-radius: 10px;
+    margin-top: 20px;
+  }
+
+  .button {
+    display: inline-block;
+    padding: 10px 16px;
+    border-radius: 8px;
+    color: white;
+    text-decoration: none;
+    font-weight: bold;
+    margin-right: 10px;
+    margin-top: 20px;
+  }
+
+  .blue { background: #2563eb; }
+  .green { background: #16a34a; }
+
+  .footer {
+    margin-top: 25px;
+    font-size: 12px;
+    color: #6b7280;
+    text-align: center;
+  }
+
+</style>
 </head>
-<body style="margin:0; padding:0; background:#f3f4f6; font-family: Arial, sans-serif;">
-  <div style="max-width:700px; margin:20px auto; background:#ffffff; border-radius:12px; overflow:hidden; border:1px solid #e5e7eb;">
-    <!-- HEADER -->
-    <div style="background:#1f2937; padding:20px; text-align:center;">
-      <h1 style="color:#ffffff; margin:0; font-size:22px;">
-        RV Rental Reservation Request
-      </h1>
-    </div>
 
-    <!-- BODY -->
-    <div style="padding:24px; color:#111827; line-height:1.6;">
-      <!-- WARNING -->
-      <p style="color:#dc2626; font-weight:bold; font-size:18px; text-transform:uppercase;">
-        THIS IS NOT A RESERVATION CONFIRMATION
-      </p>
-      <p>Please see the requested rental details below:</p>
+<body>
 
-      <!-- DETAILS BOX -->
-      <div style="background:#f9fafb; border:1px solid #e5e7eb; padding:16px; border-radius:10px; margin:15px 0;">
-        <p><strong>Vehicle Type:</strong> ${vehicleType}</p>
-        <p><strong>Season/Duration:</strong> ${seasonDisplay}</p>
-        <p><strong>Pricing Tier:</strong> ${splitSeasonMode ? sharedTier : rateTier} tier</p>
-        <p><strong># of Nights:</strong> ${totalNights}</p>
-      </div>
+<div class="container">
 
-      <!-- PRICING -->
-      <div style="margin-top:15px;">
-        <p><strong>Rental Total:</strong> $${rentalTotal.toFixed(2)}${aaaDiscount ? ` (After $${aaaDiscountAmount.toFixed(2)} AAA Discount)` : ''}</p>
-        <p><strong>Mileage:</strong> $${mileageCost.toFixed(2)} ${unlimitedMileage ? '(Unlimited Plan)' : `(${milesDriven} miles @ $0.39/mile)`}</p>
-        ${includeCDW ? `<p><strong>CDW:</strong> $${cdwCost.toFixed(2)}</p>` : ''}
-        ${includeWDP ? `<p><strong>WDP:</strong> $${wdpCost.toFixed(2)}</p>` : ''}
-        ${housekeepingCost > 0 ? `<p><strong>Housekeeping:</strong> $${housekeepingCost.toFixed(2)} (${housekeepingGuests} guests)</p>` : ''}
-        <p><strong>Anchorage Tax (8%):</strong> $${anchorageTax.toFixed(2)}</p>
-        <p><strong>Alaska Tax (3%):</strong> $${alaskaTax.toFixed(2)}</p>
-      </div>
+  <div class="title">RV Rental Reservation Request</div>
 
-      <!-- HIGHLIGHT BOX -->
-      <div style="background:#fef3c7; border:1px solid #facc15; padding:15px; border-radius:10px; margin-top:20px;">
-        <p style="margin:0; font-weight:bold;">
-          Important for International Clients
-        </p>
-        <p style="margin-top:8px;">
-          If you'd prefer to send your credit card information in two separate emails, we can book your reservation and send out your confirmation email once we receive all of your credit card information.
-        </p>
-      </div>
-
-      <!-- TOTAL -->
-      <div style="margin-top:20px; padding:15px; background:#f3f4f6; border-radius:10px;">
-        <p style="font-size:18px;"><strong>Grand Total:</strong> $${grandTotal.toFixed(2)}</p>
-      </div>
-
-      <!-- FOOTER -->
-      <p style="margin-top:30px; font-size:12px; color:#6b7280; text-align:center;">
-        Please confirm availability for these dates.<br/>
-        Thank you — Alaska RV Rental Reservations
-      </p>
-    </div>
+  <div class="warning">
+    THIS IS NOT A RESERVATION CONFIRMATION
   </div>
+
+  <div class="section">
+    Please see the requested rental details below:
+  </div>
+
+  <div class="box">
+    <div><strong>Vehicle Type:</strong> ${vehicleType}</div>
+    <div><strong>Season/Duration:</strong> ${seasonDisplay}</div>
+    <div><strong>Pricing Tier:</strong> ${pricingTier} tier</div>
+    <div><strong># of Nights:</strong> ${totalNights}</div>
+  </div>
+
+  <div class="box">
+    <div><strong>Rental Total:</strong> $${rentalTotal.toFixed(2)}</div>
+    ${aaaDiscount ? `<div><strong>AAA Discount:</strong> -$${aaaDiscountAmount.toFixed(2)}</div>` : ''}
+    <div><strong>Mileage:</strong> $${mileageCost.toFixed(2)} ${unlimitedMileage ? '(Unlimited Plan)' : `(${milesDriven} miles @ $0.39/mile)`}</div>
+    ${includeCDW ? `<div><strong>CDW:</strong> $${cdwCost.toFixed(2)}</div>` : ''}
+    ${includeWDP ? `<div><strong>WDP:</strong> $${wdpCost.toFixed(2)}</div>` : ''}
+    ${housekeepingCost > 0 ? `<div><strong>Housekeeping:</strong> $${housekeepingCost.toFixed(2)} (${housekeepingGuests} guests)</div>` : ''}
+    <div><strong>Anchorage Tax (8%):</strong> $${anchorageTax.toFixed(2)}</div>
+    <div><strong>Alaska Tax (3%):</strong> $${alaskaTax.toFixed(2)}</div>
+  </div>
+
+  <div class="red-text">
+    We understand payment in full is required at the time of booking.
+  </div>
+
+  <div class="highlight">
+    <strong>Important for International Clients</strong>
+    <p>
+      If you'd prefer to send your credit card information in two separate emails,
+      we can book your reservation and send out your confirmation email once we
+      receive all of your credit card information.
+    </p>
+  </div>
+
+  <div class="box">
+    <div><strong>Grand Total:</strong> $${grandTotal.toFixed(2)}</div>
+  </div>
+
+  <div>
+    <a class="button blue" href="tel:1-800-323-5757">Call Reservations</a>
+    <a class="button green" href="mailto:reservations@alaskarvrentals.com">Email Us</a>
+  </div>
+
+  <div class="footer">
+    Please confirm availability for these dates.<br>
+    Thank you — Alaska RV Rental Reservations
+  </div>
+
+</div>
+
 </body>
 </html>`;
   };
