@@ -139,43 +139,72 @@ export default function AlaskaRVCalculator() {
       ? `${seasonOneNights} nights ${season} + ${seasonTwoNights} nights ${seasonTwo}`
       : `${nights} nights ${season}`;
 
-    return `Hello Alaska RV Rental Reservations,
+    return `<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>RV Rental Reservation Request</title>
+</head>
+<body style="margin:0; padding:0; background:#f3f4f6; font-family: Arial, sans-serif;">
+  <div style="max-width:700px; margin:20px auto; background:#ffffff; border-radius:12px; overflow:hidden; border:1px solid #e5e7eb;">
+    <!-- HEADER -->
+    <div style="background:#1f2937; padding:20px; text-align:center;">
+      <h1 style="color:#ffffff; margin:0; font-size:22px;">
+        RV Rental Reservation Request
+      </h1>
+    </div>
 
-THIS IS NOT A RESERVATION CONFIRMATION.
+    <!-- BODY -->
+    <div style="padding:24px; color:#111827; line-height:1.6;">
+      <!-- WARNING -->
+      <p style="color:#dc2626; font-weight:bold; font-size:18px; text-transform:uppercase;">
+        THIS IS NOT A RESERVATION CONFIRMATION
+      </p>
+      <p>Please see the requested rental details below:</p>
 
-Please see the requested rental details below.
+      <!-- DETAILS BOX -->
+      <div style="background:#f9fafb; border:1px solid #e5e7eb; padding:16px; border-radius:10px; margin:15px 0;">
+        <p><strong>Vehicle Type:</strong> ${vehicleType}</p>
+        <p><strong>Season/Duration:</strong> ${seasonDisplay}</p>
+        <p><strong>Pricing Tier:</strong> ${splitSeasonMode ? sharedTier : rateTier} tier</p>
+        <p><strong># of Nights:</strong> ${totalNights}</p>
+      </div>
 
-Vehicle Type: ${vehicleType}
-Season/Duration: ${seasonDisplay}
-Pricing Tier: ${splitSeasonMode ? sharedTier : rateTier} tier
+      <!-- PRICING -->
+      <div style="margin-top:15px;">
+        <p><strong>Rental Total:</strong> $${rentalTotal.toFixed(2)}${aaaDiscount ? ` (After $${aaaDiscountAmount.toFixed(2)} AAA Discount)` : ''}</p>
+        <p><strong>Mileage:</strong> $${mileageCost.toFixed(2)} ${unlimitedMileage ? '(Unlimited Plan)' : `(${milesDriven} miles @ $0.39/mile)`}</p>
+        ${includeCDW ? `<p><strong>CDW:</strong> $${cdwCost.toFixed(2)}</p>` : ''}
+        ${includeWDP ? `<p><strong>WDP:</strong> $${wdpCost.toFixed(2)}</p>` : ''}
+        ${housekeepingCost > 0 ? `<p><strong>Housekeeping:</strong> $${housekeepingCost.toFixed(2)} (${housekeepingGuests} guests)</p>` : ''}
+        <p><strong>Anchorage Tax (8%):</strong> $${anchorageTax.toFixed(2)}</p>
+        <p><strong>Alaska Tax (3%):</strong> $${alaskaTax.toFixed(2)}</p>
+      </div>
 
-Estimated Rental Total: $${rentalTotal.toFixed(2)}
-${aaaDiscount > 0 ? `AAA Discount: -$${aaaDiscountAmount.toFixed(2)}` : ''}
+      <!-- HIGHLIGHT BOX -->
+      <div style="background:#fef3c7; border:1px solid #facc15; padding:15px; border-radius:10px; margin-top:20px;">
+        <p style="margin:0; font-weight:bold;">
+          Important for International Clients
+        </p>
+        <p style="margin-top:8px;">
+          If you'd prefer to send your credit card information in two separate emails, we can book your reservation and send out your confirmation email once we receive all of your credit card information.
+        </p>
+      </div>
 
-Mileage: $${mileageCost.toFixed(2)} ${unlimitedMileage ? '(Unlimited Plan)' : `(${milesDriven} miles @ $0.39/mile)`}
-${includeCDW ? `CDW: $${cdwCost.toFixed(2)}` : ''}
-${includeWDP ? `WDP: $${wdpCost.toFixed(2)}` : ''}
+      <!-- TOTAL -->
+      <div style="margin-top:20px; padding:15px; background:#f3f4f6; border-radius:10px;">
+        <p style="font-size:18px;"><strong>Grand Total:</strong> $${grandTotal.toFixed(2)}</p>
+      </div>
 
-Housekeeping Package: $${housekeepingCost.toFixed(2)} ${housekeepingGuests > 0 ? `(${housekeepingGuests} guests)` : ''}
-
-Anchorage Tax (8%): $${anchorageTax.toFixed(2)}
-Alaska State Tax (3%): $${alaskaTax.toFixed(2)}
-
-Grand Total: $${grandTotal.toFixed(2)}
-
-Taxes & Fees Included in Quote
-
-IMPORTANT FOR INTERNATIONAL CLIENTS:
-If you'd prefer to send your credit card information in two separate emails, we can book your reservation and send out your confirmation email once we receive all of your credit card information.
-
-We understand payment in full is required at the time of booking.
-
-Please confirm availability for these dates.
-
-Thank you,
-
-Alaska RV Rental Reservations
-`;
+      <!-- FOOTER -->
+      <p style="margin-top:30px; font-size:12px; color:#6b7280; text-align:center;">
+        Please confirm availability for these dates.<br/>
+        Thank you — Alaska RV Rental Reservations
+      </p>
+    </div>
+  </div>
+</body>
+</html>`;
   };
 
   return (
@@ -460,12 +489,18 @@ Alaska RV Rental Reservations
 
         {showEmailTemplate && (
           <div className="email-content">
-            <pre className="email-template">{generateEmailTemplate()}</pre>
+            <div className="email-preview">
+              <iframe
+                srcDoc={generateEmailTemplate()}
+                title="Email Preview"
+                className="email-iframe"
+              />
+            </div>
             <button
               onClick={() => navigator.clipboard.writeText(generateEmailTemplate())}
               className="copy-button"
             >
-              Copy to Clipboard
+              Copy HTML to Clipboard
             </button>
           </div>
         )}
