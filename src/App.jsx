@@ -303,7 +303,7 @@ export default function AlaskaRVCalculator() {
             <span>Rate Structure</span>
             <span>
               {splitSeasonMode
-                ? `${seasonOneNights}n ${season} + ${seasonTwoNights}n ${seasonTwo}`
+                ? `${seasonOneNights} nights ${season} + ${seasonTwoNights} nights ${seasonTwo}`
                 : rateTier}
             </span>
           </div>
