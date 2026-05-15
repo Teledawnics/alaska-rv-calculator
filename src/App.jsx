@@ -355,8 +355,10 @@ export default function AlaskaRVCalculator() {
 
           <div className="notes">
             <p>• Mileage without unlimited plan is charged at $0.39/mile.</p>
-            <p>• Anchorage rental tax capped at $240.</p>
-            <p>• Housekeeping package ($35/guest) is not taxed.</p>
+            <p>• Anchorage rental tax applies only to the discounted rental total and unlimited mileage package, capped at $240.</p>
+            <p>• Alaska state tax applies only to the discounted rental total and unlimited mileage package.</p>
+            <p>• CFP is currently excluded from the grand total calculation.</p>
+            <p>• Housekeeping package is $35 per guest and is not taxed.</p>
           </div>
         </div>
       </div>
