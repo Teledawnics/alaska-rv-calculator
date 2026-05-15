@@ -57,6 +57,7 @@ export default function AlaskaRVCalculator() {
   const [milesDriven, setMilesDriven] = React.useState(700);
   const [housekeepingGuests, setHousekeepingGuests] = React.useState(0);
   const [showReferenceTable, setShowReferenceTable] = React.useState(false);
+  const [showEmailTemplate, setShowEmailTemplate] = React.useState(false);
 
   const getRateTier = () => {
     if (nights >= 21) return 'long';
@@ -131,6 +132,51 @@ export default function AlaskaRVCalculator() {
     anchorageTax +
     alaskaTax +
     housekeepingCost;
+
+  const generateEmailTemplate = () => {
+    const vehicleType = vehicle === 'standard' ? 'Standard Class C Motorhome' : 'Large Class C Motorhome';
+    const seasonDisplay = splitSeasonMode
+      ? `${seasonOneNights} nights ${season} + ${seasonTwoNights} nights ${seasonTwo}`
+      : `${nights} nights ${season}`;
+
+    return `Hello Alaska RV Rental Reservations,
+
+THIS IS NOT A RESERVATION CONFIRMATION.
+
+Please see the requested rental details below.
+
+Vehicle Type: ${vehicleType}
+Season/Duration: ${seasonDisplay}
+Pricing Tier: ${splitSeasonMode ? sharedTier : rateTier} tier
+
+Estimated Rental Total: $${rentalTotal.toFixed(2)}
+${aaaDiscount > 0 ? `AAA Discount: -$${aaaDiscountAmount.toFixed(2)}` : ''}
+
+Mileage: $${mileageCost.toFixed(2)} ${unlimitedMileage ? '(Unlimited Plan)' : `(${milesDriven} miles @ $0.39/mile)`}
+${includeCDW ? `CDW: $${cdwCost.toFixed(2)}` : ''}
+${includeWDP ? `WDP: $${wdpCost.toFixed(2)}` : ''}
+
+Housekeeping Package: $${housekeepingCost.toFixed(2)} ${housekeepingGuests > 0 ? `(${housekeepingGuests} guests)` : ''}
+
+Anchorage Tax (8%): $${anchorageTax.toFixed(2)}
+Alaska State Tax (3%): $${alaskaTax.toFixed(2)}
+
+Grand Total: $${grandTotal.toFixed(2)}
+
+Taxes & Fees Included in Quote
+
+IMPORTANT FOR INTERNATIONAL CLIENTS:
+If you'd prefer to send your credit card information in two separate emails, we can book your reservation and send out your confirmation email once we receive all of your credit card information.
+
+We understand payment in full is required at the time of booking.
+
+Please confirm availability for these dates.
+
+Thank you,
+
+Alaska RV Rental Reservations
+`;
+  };
 
   return (
     <div className="container">
@@ -397,6 +443,30 @@ export default function AlaskaRVCalculator() {
                 ))}
               </tbody>
             </table>
+          </div>
+        )}
+      </div>
+
+      <div className="email-section">
+        <button
+          onClick={() => setShowEmailTemplate(!showEmailTemplate)}
+          className="email-toggle"
+        >
+          <h3>Generate Reservation Email</h3>
+          <span className="toggle-icon">
+            {showEmailTemplate ? '−' : '+'}
+          </span>
+        </button>
+
+        {showEmailTemplate && (
+          <div className="email-content">
+            <pre className="email-template">{generateEmailTemplate()}</pre>
+            <button
+              onClick={() => navigator.clipboard.writeText(generateEmailTemplate())}
+              className="copy-button"
+            >
+              Copy to Clipboard
+            </button>
           </div>
         )}
       </div>
