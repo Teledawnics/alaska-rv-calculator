@@ -176,7 +176,7 @@ export default function AlaskaRVCalculator() {
                 onChange={(e) => setSplitSeasonMode(e.target.checked)}
                 id="splitSeason"
               />
-              <label htmlFor="splitSeason" style={{ marginBottom: 0 }}>Split Seasons</label>
+              <label htmlFor="splitSeason">Split Seasons</label>
             </div>
           </div>
 
@@ -260,7 +260,7 @@ export default function AlaskaRVCalculator() {
                 onChange={(e) => setUnlimitedMileage(e.target.checked)}
                 id="unlimited"
               />
-              <label htmlFor="unlimited" style={{ marginBottom: 0 }}>Unlimited Mileage ($39/day)</label>
+              <label htmlFor="unlimited">Unlimited Mileage ($39/day)</label>
             </div>
 
             <div className="checkbox-row">
@@ -270,7 +270,7 @@ export default function AlaskaRVCalculator() {
                 onChange={(e) => setIncludeCDW(e.target.checked)}
                 id="cdw"
               />
-              <label htmlFor="cdw" style={{ marginBottom: 0 }}>Add CDW ($19/day)</label>
+              <label htmlFor="cdw">Add CDW ($19/day)</label>
             </div>
 
             <div className="checkbox-row">
@@ -280,7 +280,7 @@ export default function AlaskaRVCalculator() {
                 onChange={(e) => setIncludeWDP(e.target.checked)}
                 id="wdp"
               />
-              <label htmlFor="wdp" style={{ marginBottom: 0 }}>Add WDP ($12/day)</label>
+              <label htmlFor="wdp">Add WDP ($12/day)</label>
             </div>
 
             <div className="checkbox-row">
@@ -290,7 +290,7 @@ export default function AlaskaRVCalculator() {
                 onChange={(e) => setAaaDiscount(e.target.checked)}
                 id="aaa"
               />
-              <label htmlFor="aaa" style={{ marginBottom: 0 }}>AAA Discount (5% off rental total)</label>
+              <label htmlFor="aaa">AAA Discount (5% off rental total)</label>
             </div>
           </div>
         </div>
